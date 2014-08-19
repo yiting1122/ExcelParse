@@ -1,33 +1,71 @@
 package com.kingsoft.stream;
 
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
+import com.kingsoft.util.RegxConvertor;
 
-
-public class Sheet implements Iterable{
+public class Sheet {
 	private String name;
 	private String rid;
 	private String sheetId;
-	//sheetµÄÎ»ÖÃĞÅÏ¢
 	private float footer;
 	private float header;
 	private float bottom;
 	private float top;
 	private float right;
 	private float left;
-	//sheetÖĞÎÄ×ÖËùÔÚµÄÇøÓò£¨²Ù×÷ÇøÓò£©
-	private String dimension; 
-	//defaultRowHeight
-	private String RowHeight;
-	//sheetview:selection  µ±Ç°sheetÑ¡ÖĞµÄcell
+	private String dimension;
+	// defaultRowHeight
+	private float RowHeight;
+	// sheetview:selection å½“å‰é€‰ä¸­èŠ‚ç‚¹
 	private String activeCell;
-	
-	private List<Row> rows;
+
+	private TreeMap<Integer, Row> rowMap;
+	//åˆ›å»ºstyleæ˜ å°„è¾¹ï¼Œå‡å°‘cellä¸­å­˜å‚¨styleIdï¼Œè¿™æ ·å¯ä»¥é€šè¿‡è¡Œåˆ—å·è¿›è¡ŒæŸ¥è¯¢
+	private HashMap<String, Integer> styleTable;
+
 	private WorkBook workBook;
 
+	public Sheet() {
+		rowMap = new TreeMap<Integer, Row>(new Comparator<Integer>() {
+			@Override
+			public int compare(Integer o1, Integer o2) {
+				int val1 = o1.intValue();
+				int val2 = o2.intValue();
+				return (val1 < val2 ? -1 : (val1 == val2 ? 0 : 1));
+			}
+
+		});
+		styleTable = new HashMap<String, Integer>();
+	}
+
+	public void addStyle(String cellPos, int styleId) {
+		if (cellPos == null) {
+			return;
+		}
+		styleTable.put(cellPos, styleId);
+	}
+
+	public int getStyleId(String cellPos) {
+		if (cellPos == null) {
+			throw new NullPointerException("NullPointerException for cellPos");
+		}
+		return styleTable.get(cellPos);
+	}
+
 	
-	
+	public HashMap<String, Integer> getStyleTable() {
+		return styleTable;
+	}
+
+	public void setStyleTable(HashMap<String, Integer> styleTable) {
+		this.styleTable = styleTable;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -108,11 +146,11 @@ public class Sheet implements Iterable{
 		this.dimension = dimension;
 	}
 
-	public String getRowHeight() {
+	public float getRowHeight() {
 		return RowHeight;
 	}
 
-	public void setRowHeight(String rowHeight) {
+	public void setRowHeight(float rowHeight) {
 		RowHeight = rowHeight;
 	}
 
@@ -124,12 +162,8 @@ public class Sheet implements Iterable{
 		this.activeCell = activeCell;
 	}
 
-	public List<Row> getRows() {
-		return rows;
-	}
-
-	public void setRows(List<Row> rows) {
-		this.rows = rows;
+	public TreeMap<Integer, Row> getRowMap() {
+		return rowMap;
 	}
 
 	public WorkBook getWorkBook() {
@@ -140,11 +174,83 @@ public class Sheet implements Iterable{
 		this.workBook = workBook;
 	}
 
-	@Override
-	public Iterator iterator() {
-		return null;
+	public void addRow(int id, Row row) {
+		rowMap.put(id, row);
 	}
+
+	public Row getRow(int rowNum) {
+		if (rowNum < 0 || rowNum > Integer.MAX_VALUE) {
+			throw new IndexOutOfBoundsException(
+					"rowNum is out of Bounds Exception " + rowNum);
+		}
+		return rowMap.get(rowNum);
+	}
+
+	public Row getFirstRow() {
+		return rowMap.size() == 0 ? null : rowMap.firstEntry().getValue();
+	}
+
+	public Row getLastRow() {
+		return rowMap.size() == 0 ? null : rowMap.lastEntry().getValue();
+	}
+
+	public int getFirstNum() {
+		return rowMap.size() == 0 ? 0 : rowMap.firstKey();
+	}
+
+	public int getLastNum() {
+		return rowMap.size() == 0 ? 0 : rowMap.lastKey();
+	}
+
+	public void changeRowNumber(Row row, int newRowNum) {
+		removeRow(row);
+		rowMap.put(newRowNum, row);
+	}
+
+	public void removeRow(Row row) {
+		Iterator<Map.Entry<Integer, Row>> iterator = rowMap.entrySet()
+				.iterator();
+		while (iterator.hasNext()) {
+			if (iterator.next().getValue() == row) {
+				iterator.remove();
+				return;
+			}
+		}
+	}
+
+	public void removeRow(int rowNum) {
+		if (rowNum < 0 || rowNum > Integer.MAX_VALUE) {
+			throw new IndexOutOfBoundsException(
+					"rowNum is out of Bounds Exception " + rowNum);
+		}
+
+		Iterator<Integer> iterator = rowMap.keySet().iterator();
+		while (iterator.hasNext()) {
+			if (rowNum == iterator.next().intValue()) {
+				rowMap.remove(rowNum);
+			}
+		}
+	}
+
+	public Cell getCell(int rowNum, short column) {
+		Row row = getRow(rowNum);
+		if (row == null) {
+			return null;
+		}
+		return row.getCell(column);
+	}
+
+	@Override
+	public String toString() {
+		return "Sheet [name=" + name + ", rid=" + rid + ", sheetId=" + sheetId
+				+ ", footer=" + footer + ", header=" + header + ", bottom="
+				+ bottom + ", top=" + top + ", right=" + right + ", left="
+				+ left + ", dimension=" + dimension + ", RowHeight="
+				+ RowHeight + ", activeCell=" + activeCell + ", rowMap="
+				+ rowMap + ", styleTable size=" + styleTable.size() + ", workBook="
+				+ workBook + "]";
+	}
+
 	
-	
-	
+
 }

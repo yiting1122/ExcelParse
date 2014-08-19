@@ -1,43 +1,51 @@
 package com.kingsoft.stream;
 
+import com.kingsoft.value.Value;
+
 public class Cell {
-	public String columns;
-	private String type;
-	private String value;
+	private Value value;
+
+	// private short styleId;
+
+	public Cell() {
+
+	}
+
+//	public Cell(Value value, short styleId) {
+//		this.value = value;
+//		this.styleId = styleId;
+//	}
 	
-	private Row row;
-	private Sheet sheet;
-	public String getColumns() {
-		return columns;
-	}
-	public void setColumns(String columns) {
-		this.columns = columns;
-	}
-	public String getType() {
-		return type;
-	}
-	public void setType(String type) {
-		this.type = type;
-	}
-	public String getValue() {
+	
+
+	public Value getValue() {
 		return value;
 	}
-	public void setValue(String value) {
+
+	public Cell(Value value) {
+	super();
+	this.value = value;
+}
+
+	public void setValue(Value value) {
 		this.value = value;
 	}
-	public Row getRow() {
-		return row;
+
+	@Override
+	public String toString() {
+		return "Cell [value=" + value + "]";
 	}
-	public void setRow(Row row) {
-		this.row = row;
-	}
-	public Sheet getSheet() {
-		return sheet;
-	}
-	public void setSheet(Sheet sheet) {
-		this.sheet = sheet;
-	}
-	
-	
-	
+
+	// public short getStyleId() {
+	// return styleId;
+	// }
+	// public void setStyleId(short styleId) {
+	// this.styleId = styleId;
+	// }
+	// @Override
+	// public String toString() {
+	// return "Cell [value=" + value + ", styleId="
+	// + styleId + "]";
+	// }
+
 }

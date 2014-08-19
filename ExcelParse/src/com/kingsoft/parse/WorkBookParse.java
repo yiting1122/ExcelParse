@@ -29,7 +29,7 @@ public class WorkBookParse extends Parse {
 	}
 
 	private void extractData(WorkBook workBook) {
-		WorkBookHandler handler = new WorkBookHandler(workBook);
+		handler = new WorkBookHandler(workBook);
 		try {
 			parser.parse(stream, handler);
 		} catch (SAXException e) {

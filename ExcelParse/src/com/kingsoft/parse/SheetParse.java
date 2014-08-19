@@ -32,7 +32,7 @@ public class SheetParse extends Parse {
 	}
 
 	private void extractData() {
-		SheetHandler handler = new SheetHandler(sheet);
+		handler = new SheetHandler(sheet);
 		try {
 			parser.parse(stream, handler);
 		} catch (SAXException e) {

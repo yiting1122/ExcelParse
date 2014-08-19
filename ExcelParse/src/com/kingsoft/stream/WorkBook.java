@@ -6,40 +6,44 @@ import java.util.HashMap;
 public class WorkBook {
 	
 	
+	
 	/**
 	 * <bookViews>=>bookeview 
 	 */
-	private int activeTab;
+	private byte activeTab;
 	private int windowHeight;
 	private int windowWidth;
 	private int yWindow;
 	private int xWindow;
+	
+	private SheetStyle sheetStyle;
+	
+	/**
+	 * <calcPr calcId>
+	 */
+	private int calcId;
+
 	
 	/**
 	 * <sheets>
 	 */
 	private HashMap<String, Sheet> sheets;
 	
-	/**
-	 * <calcPr calcId>
-	 */
-	private String calcId;
+	private HashMap<String, String> targets;
 
 	public WorkBook(){
-		sheets=new HashMap<String, Sheet>();
+		sheets=new HashMap<String, Sheet>(3); 
+		targets=new HashMap<String, String>(8);
 	}
-	
-	
-	public int getActiveTab() {
+		
+	public short getActiveTab() {
 		return activeTab;
 	}
 
-	public void setActiveTab(int activeTab) {
-		this.activeTab = activeTab;
-	}
 
-	public int getWindowHeight() {
-		return windowHeight;
+
+	public void setActiveTab(byte activeTab) {
+		this.activeTab = activeTab;
 	}
 
 	public void setWindowHeight(int windowHeight) {
@@ -73,28 +77,48 @@ public class WorkBook {
 	public HashMap<String, Sheet> getSheets() {
 		return sheets;
 	}
-
-
-	public String getCalcId() {
-		return calcId;
-	}
-
-	public void setCalcId(String calcId) {
-		this.calcId = calcId;
-	}
-	
-	
 	public void addSheet(String sheetName,Sheet sheet){
 		sheets.put(sheetName, sheet);
 	}
 
+	public int getCalcId() {
+		return calcId;
+	}
+
+	public void setCalcId(int calcId) {
+		this.calcId = calcId;
+	}
+
+
+	public HashMap<String, String> getTargets() {
+		return targets;
+	}
+
+	public void addTarget(String key,String value){
+		targets.put(key,value);
+	}
+
+	public Sheet getSheet(String sheetId){
+		return sheets.get(sheetId);
+	}
+
+	
+	
+	
+	public SheetStyle getSheetStyle() {
+		return sheetStyle;
+	}
+
+	public void setSheetStyle(SheetStyle sheetStyle) {
+		this.sheetStyle = sheetStyle;
+	}
 
 	@Override
 	public String toString() {
 	
 		return "WorkBook [activeTab=" + activeTab + ", windowHeight="
 				+ windowHeight + ", windowWidth=" + windowWidth + ", yWindow="
-				+ yWindow + ", xWindow=" + xWindow + ", sheet¸öÊý" + sheets.size()
+				+ yWindow + ", xWindow=" + xWindow + ", sheetä¸ªæ•°" + sheets.size()+",targetä¸ªæ•°"+targets.size()
 				+ ", calcId=" + calcId + "]";
 	}
 	

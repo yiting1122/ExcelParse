@@ -12,13 +12,24 @@ import com.kingsoft.stream.WorkBook;
 
 public class WorkBookHandler extends DefaultHandler {
 
-	public static final String WORKBOOKVIEW = "workbookview";
-	public static final String SHEET = "sheet";
-	public static final String CALCPR = "calcpr";
+	private static final String WORKBOOKVIEW = "workbookView";
+	private static final String SHEET = "sheet";
+	private static final String CALCPR = "calcPr";
+	private static final String CALCID="calcId";
+	private static final String NAME = "name";
+	private static final String RID = "r:id";
+	private static final String SHEETID = "sheetId";
+	private static final String ACTIVETAB = "activeTab";
+	private static final String WINDOWHEIGHT = "windowHeight";
+	private static final String WINDOWWIDTH = "windowWidth";
+	private static final String XWINDOW = "xWindow";
+	private static final String YWINDOW = "yWindow";
+	/**
+	 * 
+	 */
 
 	private WorkBook workBook;
 	private Sheet sheet;
-	private String sheetName;
 	private ExcelLogger logger = (ExcelLogger) ExcelLogger
 			.getLogger("com.kingsoft");
 
@@ -27,118 +38,102 @@ public class WorkBookHandler extends DefaultHandler {
 		this.workBook = workBook;
 	}
 
+	@Override
 	public void startDocument() throws SAXException {
-		System.out.println("*******开始解析文档*******");
 	}
 
+	@Override
 	public void endDocument() throws SAXException {
-		System.out.println("*******解析文档结束*******");
 	}
 
+	@Override
 	public void startPrefixMapping(String prefix, String uri) {
-		System.out.println("\n前缀映射: " + prefix + " 开始!" + "  它的URI是:" + uri);
 	}
 
+	@Override
 	public void endPrefixMapping(String prefix) {
-		System.out.println("\n前缀映射: " + prefix + " 结束!");
 	}
 
+	@Override
 	public void startElement(String namespaceURI, String localName,
 			String fullName, Attributes attributes) throws SAXException {
-		System.out.println("\n元素: " + "localname " + localName + "  ["
-				+ fullName + "]" + " 开始解析!");
-		if (SHEET.equals(fullName.toLowerCase())) {
-			for (int i = 0; i < attributes.getLength(); i++) {
-				String name = attributes.getLocalName(i).toLowerCase();
-				String value = attributes.getValue(i);
-				sheet = new Sheet();
-				if ("name".equals(name)) {
-
-					this.sheetName = value;
-					sheet.setName(value);
-				} else if ("sheetid".equals(name)) {
-
-					sheet.setSheetId(value);
-
-				} else if ("r:id".equals(name)) {
-					sheet.setRid(value);
-
-				}
+		if (SHEET.equals(fullName)) {
+			String sheetRId = null;
+			sheet = new Sheet();
+			sheet.setName(attributes.getValue(NAME));
+			sheet.setSheetId(attributes.getValue(SHEETID));
+			sheetRId = attributes.getValue(RID);
+			sheet.setRid(sheetRId);
+			if (sheetRId != null) {
+				sheet.setWorkBook(workBook);
+				workBook.addSheet(sheetRId, sheet);
 			}
 
-		} else if (WORKBOOKVIEW.equals(fullName.toLowerCase())) {
-			for (int i = 0; i < attributes.getLength(); i++) {
-				String name = attributes.getLocalName(i).toLowerCase();
-				String value = attributes.getValue(i);
-				if ("activetab".equals(name)) {
-					workBook.setActiveTab(Integer.parseInt(value));
-				} else if ("windowheight".equals(name)) {
-					workBook.setWindowHeight(Integer.parseInt(value));
-				} else if ("windowwidth".equals(name)) {
-					workBook.setWindowWidth(Integer.parseInt(attributes
-							.getValue(i)));
-				} else if ("ywindow".equals(name)) {
-					workBook.setyWindow(Integer.parseInt(value));
-				} else if ("xwindow".equals(name)) {
-					workBook.setxWindow(Integer.parseInt(value));
-				}
-
+		} else if (WORKBOOKVIEW.equals(fullName)) {
+			if(attributes.getValue(ACTIVETAB)!=null){
+			workBook.setActiveTab(Byte.parseByte(attributes.getValue(ACTIVETAB)));
+			}
+			if(attributes.getValue(WINDOWHEIGHT)!=null){
+			workBook.setWindowHeight(Integer.parseInt(attributes
+					.getValue(WINDOWHEIGHT)));
+			}
+			if(attributes.getValue(WINDOWWIDTH)!=null){
+			workBook.setWindowWidth(Integer.parseInt(attributes
+					.getValue(WINDOWWIDTH)));
+			}
+			if(attributes.getValue(YWINDOW)!=null){
+			workBook.setyWindow(Integer.parseInt(attributes.getValue(YWINDOW)));
+			}
+			if(attributes.getValue(XWINDOW)!=null){
+			workBook.setxWindow(Integer.parseInt(attributes.getValue(XWINDOW)));
 			}
 
-		} else if (CALCPR.equals(fullName.toLowerCase())) {
-			for (int i = 0; i < attributes.getLength(); i++) {
-				String name = attributes.getLocalName(i).toLowerCase();
-				String value = attributes.getValue(i);
-				if ("calcid".equals(name)) {
-					workBook.setCalcId(value);
-				}
-			}
-
+		} else if (CALCPR.equals(fullName)) {
+			workBook.setCalcId(Integer.parseInt(attributes.getValue(CALCID)));
 		}
 
 	}
 
+	@Override
 	public void endElement(String namespaceURI, String localName,
 			String fullName) throws SAXException {
-		// 打印元素解析结束信息
-		System.out.println("元素: " + "[" + fullName + "]" + " 解析结束!");
-		if ("sheet".equals(fullName.toLowerCase())) {
-			sheet.setWorkBook(workBook);
-			workBook.addSheet(sheetName, sheet);
-		}
 	}
 
+	@Override
 	public void characters(char[] chars, int start, int length)
 			throws SAXException {
 
 	}
 
+	@Override
 	public void warning(SAXParseException exception) {
 
 		System.out.println("*******WARNING******");
-		System.out.println("\t行:\t" + exception.getLineNumber());
-		System.out.println("\t列:\t" + exception.getColumnNumber());
-		System.out.println("\t错误信息:\t" + exception.getMessage());
+		System.out.println("\t锟斤拷:\t" + exception.getLineNumber());
+		System.out.println("\t锟斤拷:\t" + exception.getColumnNumber());
+		System.out.println("\t锟斤拷锟斤拷锟斤拷息:\t" + exception.getMessage());
 		System.out.println("********************");
 		logger.warn(WorkBookHandler.class.getName(), exception.getLineNumber()
 				+ exception.getMessage());
 	}
 
+	@Override
 	public void error(SAXParseException exception) throws SAXException {
 		System.out.println("******* ERROR ******");
-		System.out.println("\t行:\t" + exception.getLineNumber());
-		System.out.println("\t列:\t" + exception.getColumnNumber());
-		System.out.println("\t错误信息:\t" + exception.getMessage());
+		System.out.println("\t锟斤拷:\t" + exception.getLineNumber());
+		System.out.println("\t锟斤拷:\t" + exception.getColumnNumber());
+		System.out.println("\t锟斤拷锟斤拷锟斤拷息:\t" + exception.getMessage());
 		System.out.println("********************");
 		logger.error(WorkBookHandler.class.getName(), exception.getLineNumber()
 				+ exception.getMessage());
 	}
 
+	@Override
 	public void fatalError(SAXParseException exception) throws SAXException {
 		System.out.println("******** FATAL ERROR ********");
-		System.out.println("\t行:\t" + exception.getLineNumber());
-		System.out.println("\t列:\t" + exception.getColumnNumber());
-		System.out.println("\t错误信息:\t" + exception.getMessage());
+		System.out.println("\t锟斤拷:\t" + exception.getLineNumber());
+		System.out.println("\t锟斤拷:\t" + exception.getColumnNumber());
+		System.out.println("\t锟斤拷锟斤拷锟斤拷息:\t" + exception.getMessage());
 		System.out.println("*****************************");
 		logger.error(WorkBookHandler.class.getName(), exception.getLineNumber()
 				+ exception.getMessage());

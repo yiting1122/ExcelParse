@@ -7,12 +7,14 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 import com.kingsoft.stream.WorkBook;
 
 public abstract class Parse {
 	public InputStream stream;
 	public SAXParser parser;
+	protected DefaultHandler handler;
 
 	public Parse(InputStream stream) {
 		// 1.实例化SAXParserFactory对象
